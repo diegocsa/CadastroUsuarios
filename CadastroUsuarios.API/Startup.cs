@@ -11,6 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -36,22 +39,58 @@ namespace CadastroUsuarios.API
             services.AddControllers();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                           .AddJwtBearer(options =>
-                           {
-                               options.TokenValidationParameters = new TokenValidationParameters
-                               {
-                                   ValidateIssuer = true,
-                                   ValidateAudience = true,
-                                   ValidateLifetime = true,
-                                   ValidateIssuerSigningKey = true,
-                                   ValidIssuer = Configuration["TokenJWT:Issuer"],
-                                   ValidAudience = Configuration["TokenJWT:Audience"],
-                                   IssuerSigningKey = new SymmetricSecurityKey
-                               (Encoding.UTF8.GetBytes(Configuration["TokenJWT:Chave"]))
-                               };
-                           });
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["TokenJWT:Issuer"],
+                    ValidAudience = Configuration["TokenJWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+    (Encoding.UTF8.GetBytes(Configuration["TokenJWT:Chave"]))
+                };
+            });
 
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Cadastro Usuarios",
+                    Version = "v1",
+                    Description = "Simples cadastro de usuários",
+                });
 
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Coloque a palavra 'Bearer' seguida de um espaço e o JWT vindo do metodo post de 'Login'. Os POST 'Usuario' e 'Usuario/Login' não precisam de autenticação",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
+                });
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,7 +111,7 @@ namespace CadastroUsuarios.API
 
             app.UseRouting();
 
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -80,6 +119,9 @@ namespace CadastroUsuarios.API
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Simples cadastro de usuários"));
         }
     }
 }
