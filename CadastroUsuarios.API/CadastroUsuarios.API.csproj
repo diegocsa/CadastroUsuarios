@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
+    <PackageReference Include="TinyMapper" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CadastroUsuarios.Infra.CrossCutting\CadastroUsuarios.Infra.CrossCutting.csproj" />
+    <ProjectReference Include="..\CadastroUsuarios.Dominio\CadastroUsuarios.Dominio.csproj" />
+    <ProjectReference Include="..\CadastroUsuarios.Infra.Data\CadastroUsuarios.Infra.Data.csproj" />
+    <ProjectReference Include="..\CadastroUsuarios.Servico\CadastroUsuarios.Servico.csproj" />
+  </ItemGroup>
+
+
+</Project>
